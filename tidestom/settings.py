@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.postgres',
     'django_extensions',
      'debug_toolbar',
     'guardian',
@@ -116,14 +117,15 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-        # USE THESE WHEN DOING A DUMP FOR SETTING UP THE FULL TIDES DB
-        #'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': 'temp_schema_export_db',
-        #'USER': 'pwise',
-        #'PASSWORD': '',
-        #'HOST': 'localhost',
-        #'PORT': '5432',
-        #}
+         #USE THESE WHEN DOING A DUMP FOR SETTING UP THE FULL TIDES DB
+    #"""'default': {
+    #    'ENGINE': 'django.db.backends.postgresql',
+    #    'NAME': 'test_postgres',
+    #    'USER': 'pwise',
+    #    'PASSWORD': '',
+    #    'HOST': 'localhost',
+    #    'PORT': '5432',
+    #    }"""
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

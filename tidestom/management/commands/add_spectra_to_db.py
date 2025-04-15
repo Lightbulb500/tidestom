@@ -46,11 +46,11 @@ class Command(BaseCommand):
         if not os.path.exists(target_csv_path):
             self.stdout.write(self.style.ERROR(f"Target CSV file not found at {target_csv_path}"))
             return
-        
+
         dbdf = pd.read_csv(target_csv_path, index_col=0)
         targets = Target.objects.all()
         for target in targets:
-            spectrum_file_path = os.path.join(settings.TEST_DIR,f'sims/l1_obs_joined_{target.name}.fits')
+            spectrum_file_path = os.path.join(settings.TEST_DIR, f'sims/l1_obs_joined_{target.name}.fits')
             if os.path.exists(spectrum_file_path):
                 # Check if the spectrum already exists in the database
                 spectrum_exists = DataProduct.objects.filter(target=target, data=spectrum_file_path).exists()
@@ -75,19 +75,18 @@ class Command(BaseCommand):
                     auto_class_prob = dbdf.at[int_name, 'AutoClassProb']
 
                     if auto_class:
-                        target.auto_tidesclass = auto_class
+                        # Update the JSONField with the classification data
+                        if not target.auto_tidesclassifications:
+                            target.auto_tidesclassifications = {}
 
-                        # Retrieve the TidesClassSubClass instance using the correct field
-                        auto_class_subclass_instance = TidesClassSubClass.objects.filter(sub_class=auto_class_subclass).first()
+                        target.auto_tidesclassifications[f"mock_{int_name}"] = {
+                            "class": auto_class,
+                            "subclass": auto_class_subclass,
+                            "probability": auto_class_prob,
+                        }
 
-                        if auto_class_subclass_instance:
-                            target.auto_tidesclass_subclass = auto_class_subclass_instance
-                        else:
-                            logging.warning(f"Subclass '{auto_class_subclass}' not found in TidesClassSubClass for target {target.name}")
-
-                        target.auto_tidesclass_prob = auto_class_prob
                         target.save()
-                        logging.info(f'Updated auto classification for target {target.name}')
+                        logging.info(f'Updated auto classifications for target {target.name}')
                     else:
                         logging.warning(f'No auto classification found for target {target.name}')
             else:

@@ -3,6 +3,7 @@ from tom_targets.base_models import BaseTarget
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from collections import Counter
+from django.db.models import JSONField  # Import JSONField for PostgreSQL
 
 class TidesClass(models.Model):
     name = models.CharField(max_length=50)
@@ -42,14 +43,13 @@ class TidesTarget(BaseTarget):
         ('Other', 'Other'),
     ]
 
+    # Existing fields
     tidesclass = models.CharField(max_length=50, choices=TIDES_CLASS_CHOICES, verbose_name='TiDES Classification', default='SN')
     tidesclass_other = models.CharField(max_length=100, blank=True, null=True, verbose_name='TiDES Classification (Other)')
     tidesclass_subclass = models.ForeignKey(TidesClassSubClass, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='TiDES Sub-classification')
 
-    auto_tidesclass = models.CharField(max_length=50, choices=TIDES_CLASS_CHOICES, verbose_name='Auto TiDES Classification', blank=True, null=True)
-    auto_tidesclass_other = models.CharField(max_length=100, blank=True, null=True, verbose_name='Auto TiDES Classification (Other)')
-    auto_tidesclass_subclass = models.ForeignKey(TidesClassSubClass, on_delete=models.SET_NULL, blank=True, null=True, related_name='auto_subclass', verbose_name='Auto TiDES Sub-classification')
-    auto_tidesclass_prob = models.FloatField(blank=True, null=True, verbose_name='Auto TiDES Classification Probability')
+    # Replace individual auto classification fields with a JSONField
+    auto_tidesclassifications = JSONField(blank=True, null=True, verbose_name='Auto TiDES Classifications')
 
     human_tidesclass = models.CharField(max_length=50, choices=TIDES_CLASS_CHOICES, verbose_name='Human TiDES Classification', blank=True, null=True)
     human_tidesclass_other = models.CharField(max_length=100, blank=True, null=True, verbose_name='Human TiDES Classification (Other)')
