@@ -65,30 +65,43 @@ class Command(BaseCommand):
                 else:
                     logging.warning(f'Spectrum for target {target.name} already exists in the database')
 
-                # Add or update automatic classification
-                logging.info(f'Checking auto classification for target {target.name}')
+                # Add or update automatic classifications
+                logging.info(f'Checking auto classifications for target {target.name}')
                 int_name = int(target.name)
                 if int_name in dbdf.index:
                     logging.info(f'Found target {target.name} in the mock catalogue')
-                    auto_class = dbdf.at[int_name, 'AutoClass']
-                    auto_class_subclass = dbdf.at[int_name, 'AutoClass_SubClass']
-                    auto_class_prob = dbdf.at[int_name, 'AutoClassProb']
 
-                    if auto_class:
-                        # Update the JSONField with the classification data
-                        if not target.auto_tidesclassifications:
-                            target.auto_tidesclassifications = {}
+                    # Find all classifier names by looking for columns that match AutoClass_{classifier_name}
+                    classifier_names = [
+                        col.split('_', 1)[1] for col in dbdf.columns
+                        if col.startswith('AutoClass_') and f'AutoClass_SubClass_{col.split("_", 1)[1]}' in dbdf.columns and f'AutoClassProb_{col.split("_", 1)[1]}' in dbdf.columns
+                    ]
 
-                        target.auto_tidesclassifications[f"mock_{int_name}"] = {
-                            "class": auto_class,
-                            "subclass": auto_class_subclass,
-                            "probability": auto_class_prob,
-                        }
+                    for classifier_name in classifier_names:
+                        auto_class = dbdf.at[int_name, f'AutoClass_{classifier_name}']
+                        auto_class_subclass = dbdf.at[int_name, f'AutoClass_SubClass_{classifier_name}']
+                        auto_class_prob = dbdf.at[int_name, f'AutoClassProb_{classifier_name}']
 
-                        target.save()
-                        logging.info(f'Updated auto classifications for target {target.name}')
-                    else:
-                        logging.warning(f'No auto classification found for target {target.name}')
+                        if auto_class:
+                            # Update the JSONField with the classification data
+                            if not target.auto_tidesclassifications:
+                                target.auto_tidesclassifications = {}
+
+                            target.auto_tidesclassifications[classifier_name] = {
+                                "class": auto_class,
+                                "subclass": auto_class_subclass,
+                                "probability": auto_class_prob,
+                            }
+
+                            logging.info(f'Added classification for {classifier_name} to target {target.name}')
+                        else:
+                            logging.warning(f'No classification found for {classifier_name} for target {target.name}')
+
+                    # Save the updated target
+                    target.save()
+                    logging.info(f'Updated auto classifications for target {target.name}')
+                else:
+                    logging.warning(f'Target {target.name} not found in the mock catalogue')
             else:
                 logging.warning(f'Spectrum file {spectrum_file_path} not found for target {target.name}')
 

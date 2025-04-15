@@ -107,19 +107,20 @@ document.addEventListener("DOMContentLoaded", function () {
       {% tides_target_data object %}
       <h3>Classifications</h3>
       <ul>
-        <li><strong>Auto Classification:</strong></li>
-        {% if object.auto_tidesclass %}
-          {{ object.auto_tidesclass }}
-          {% if object.auto_tidesclass_subclass %}
-            <ul>
-              <li>{{ object.auto_tidesclass_subclass.sub_class }}</li>
-            </ul>
-          {% endif %}
-          {% if object.auto_tidesclass_prob %}
-            <p>Probability: {{ object.auto_tidesclass_prob }}</p>
-          {% endif %}
+        <li><strong>Auto Classifications:</strong></li>
+        {% if object.auto_tidesclassifications %}
+          <ul>
+            {% for classifier_name, classification in object.auto_tidesclassifications.items %}
+              <li>
+                <strong>{{ classifier_name }}:</strong>
+                Class: {{ classification.class }},
+                Sub-class: {{ classification.subclass }},
+                Probability: {{ classification.probability|floatformat:2 }}
+              </li>
+            {% endfor %}
+          </ul>
         {% else %}
-          <p>No Auto Classification</p>
+          <p>No Auto Classifications</p>
         {% endif %}
       </ul>
       
