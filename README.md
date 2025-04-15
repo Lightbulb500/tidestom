@@ -100,6 +100,7 @@ To use the Tides TOM with test data, follow these steps:
 5. **Run the `populate_tidesclasses` command**:  
     Before adding targets, make sure to populate the `TidesClass` and `TidesClassSubClass` tables by running the following command:
     ```bash
+    python manage.py migrate
     python manage.py populate_tidesclasses
     ```
 ---
