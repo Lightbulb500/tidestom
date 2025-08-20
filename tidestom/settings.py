@@ -125,8 +125,18 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
-        }
+        },
+    'tides_db':{
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'tides_db',  # Main database
+        'USER': 'pwise',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+
 }
+DATABASE_ROUTERS = ['custom_code.db_router.TidesDatabaseRouter']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -194,11 +204,11 @@ LOGGING = {
         }
     },
     'loggers': {
-        '': {
+        'django.db.backends': {
             'handlers': ['console'],
-            'level': 'INFO'
-        }
-    }
+            'level': 'DEBUG',  # Log all SQL queries
+        },
+    },
 }
 
 # Caching
@@ -213,9 +223,10 @@ CACHES = {
 
 # TOM Specific configuration
 TARGET_TYPE = 'SIDEREAL'
-
+TARGET_MODEL = 'custom_code.models.MirroredTidesTarget'
+TOM_TARGET_MODEL = 'custom_code.models.MirroredTidesTarget'
 # Set to the full path of a custom target model to extend the BaseTarget Model with custom fields.
-TARGET_MODEL_CLASS = 'custom_code.models.TidesTarget'
+TARGET_MODEL_CLASS = 'custom_code.models.MirroredTidesTarget'
 
 # Define MATCH_MANAGERS here. This is a dictionary that contains a dotted module path to the desired match manager
 # for a given model.

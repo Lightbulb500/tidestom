@@ -1,12 +1,12 @@
-{% if target.auto_tidesclassifications %}
+{% if auto_classifications %}
   <p><strong>Auto Classifications:</strong></p>
   <ul>
-    {% for classifier_name, classification in target.auto_tidesclassifications.items %}
+    {% for auto_classification in auto_classifications %}
       <li>
-        <strong>{{ classifier_name }}:</strong>
-        Class: {{ classification.class }},
-        Sub-class: {{ classification.subclass }},
-        Probability: {{ classification.probability|floatformat:2 }}
+        <strong>Type:</strong> {{ auto_classification.sn_type }},
+        <strong>Probability:</strong> {{ auto_classification.probability|floatformat:2 }},
+        <strong>Version:</strong> {{ auto_classification.version }},
+        <strong>Notes:</strong> {{ auto_classification.notes }}
       </li>
     {% endfor %}
   </ul>
